@@ -23,6 +23,7 @@ const PostForm = ({ addPost }) => {
     reader.readAsDataURL(file);
   };
   // for image put preview
+  //
   const handleImageChange2 = e => {
     e.preventDefault();
     let reader = new FileReader();
