@@ -10,11 +10,21 @@ const PostSchema = new Schema({
     type: String,
     required: true
   },
-  thumbnail: {
-    type: String
+  before: {
+    thumbnail: {
+      type: String
+    },
+    largeImage: {
+      type: String
+    }
   },
-  largeImage: {
-    type: String
+  after: {
+    thumbnail: {
+      type: String
+    },
+    largeImage: {
+      type: String
+    }
   },
   name: {
     type: String

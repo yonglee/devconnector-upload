@@ -84,7 +84,8 @@ export const deletePost = postId => async dispatch => {
 // Add post
 export const addPost = formData => async dispatch => {
   const config = {
-    'Content-Type': 'application/json'
+    // 'Content-Type': 'application/json'
+    'Content-Type': 'multipart/form-data'
   };
   try {
     const res = await axios.post(`/api/posts`, formData, config);

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
-// const fs = require('fs');
 const path = require('path');
 
 const auth = require('../../middleware/auth');
@@ -15,28 +14,28 @@ const resize = require('../../functions/resize');
 
 const dir = 'uploads';
 
-router.post('/upload', async (req, res) => {
-  try {
-    const image1 = req.files.image1;
-    const image2 = req.files.image2;
-    if (image1) {
-      const fileName1 = `${Date.now().toString()}-1.jpg`;
-      const savedFile1 = `${dir}/${fileName1}`;
-      await image1.mv(savedFile1);
-      const images1 = await resize(savedFile1);
-      console.log('images1', images1);
-    }
-    if (image2) {
-      const fileName2 = `${Date.now().toString()}-2.jpg`;
-      const savedFile2 = `${dir}/${fileName2}`;
-      await image2.mv(savedFile2);
-      const images2 = await resize(savedFile2);
-      console.log('images2', images2);
-    }
-    res.status(200).json({ msg: 'file received!!!' });
-  } catch (err) {
-    console.log(err);
+router.post('/upload', auth, async (req, res) => {
+  const image1 = req.files.image1;
+  const image2 = req.files.image2;
+  var images1 = [];
+  var images2 = [];
+  var string = '';
+
+  console.log(req.body.name);
+
+  if (image1) {
+    const extName = image1.name.split('.').slice(-1)[0];
+
+    const images1 = await resize(image1.data, extName);
+    console.log('in main', images1);
   }
+  if (image2) {
+    const extName = image2.name.split('.').slice(-1)[0];
+    const images2 = await resize(image2.data, extName);
+    console.log('images2', images2);
+  }
+
+  res.status(200).json({ msg: 'file received!!!' });
 });
 
 // @route   POST api/posts
@@ -60,11 +59,37 @@ router.post(
     try {
       const user = await User.findById(req.user.id).select('-password');
 
+      const image1 = req.files.image1;
+      const image2 = req.files.image2;
+      var images1 = [];
+      var images2 = [];
+      var string = '';
+
+      if (image1) {
+        const extName = image1.name.split('.').slice(-1)[0];
+
+        images1 = await resize(image1.data, extName);
+      }
+      if (image2) {
+        const extName = image2.name.split('.').slice(-1)[0];
+        images2 = await resize(image2.data, extName);
+      }
+      console.log('in main', images1);
+      console.log('images2', images2);
+
       const newPost = new Post({
         text: req.body.text,
         name: user.name,
         avatar: user.avatar,
-        user: req.user.id
+        user: req.user.id,
+        before: {
+          thumbnail: images1[0],
+          largeImage: images1[1]
+        },
+        after: {
+          thumbnail: images1[0],
+          largeImage: images1[1]
+        }
       });
 
       const post = await newPost.save();

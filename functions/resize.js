@@ -16,131 +16,27 @@ const sizes = [
   }
 ];
 
-const resize = async (filePath, beforeOrAfter, rotate = 0) => {
-  try {
-    var images = [];
-    const file = filePath;
-    const extName = file.split('.').slice(-1)[0];
+const resize = async (imageBuffer, extName) => {
+  var images = [];
+  var string = '';
+  for (let i = 0; i < sizes.length; i++) {
+    const fileDestination = `${dir}/${Date.now()}-${sizes[i].name}.${extName}`;
+    string = await sharp(imageBuffer)
+      .resize(sizes[i].size)
+      .rotate((rotate = 0))
+      .jpeg({ quality: 60 })
+      .toFile(fileDestination)
+      .then(info => {
+        renamed = `${dir}/${Date.now()}-${sizes[i].name}-${info.width}x${
+          info.height
+        }.${extName}`;
+        fs.renameSync(fileDestination, renamed);
+        return renamed;
+      });
 
-    await fs.readFile(file, (err, data) => {
-      if (err) {
-        console.log('Error reading file ' + fileIn + ' ' + err.toString());
-      } else {
-        sizes.map(size => {
-          try {
-            const fileDestination = `${dir}/${Date.now()}-${
-              size.name
-            }.${extName}`;
-            images.push(fileDestination);
-            sharp(data)
-              .resize(size.size)
-              .rotate(rotate)
-              .jpeg({ quality: 60 })
-              .toFile(fileDestination)
-              .then(info => {
-                const finalDestination = `${dir}/${Date.now()}-${size.name}-${
-                  info.width
-                }x${info.height}.${extName}`;
-
-                sharp(fileDestination)
-                  .toFile(finalDestination)
-                  .then(info => {
-                    fs.unlinkSync(fileDestination);
-                  });
-              });
-          } catch (error) {
-            console.error('sharp error', error);
-          }
-        });
-        index = 0;
-      }
-      fs.unlinkSync(file);
-      console.log('in resize: ', images);
-    });
-  } catch (err) {
-    console.error('resize error', err);
+    images.push(string);
   }
-  return 'hey6';
+  return images;
 };
 
 module.exports = resize;
-
-// const sizes = [
-//   {
-//     name: 'thumbnail',
-//     size: 400
-//   },
-//   {
-//     name: 'large',
-//     size: 1200
-//   }
-// ];
-// // var count = 0;
-// const resize = async (filePath, beforeOrAfter, rotate = 0) => {
-//   try {
-//     const file = filePath;
-//     const extName = file.split('.').slice(-1)[0];
-//     // await sharp(file)
-//     //   .metadata()
-//     //   .then(data => console.log(data));
-//     await fs.readFile(file, (err, data) => {
-//       if (err) {
-//         console.log('Error reading file ' + fileIn + ' ' + err.toString());
-//       } else {
-//         sizes.map(async size => {
-//           try {
-//             const fileDestination = `${dir}/${Date.now()}-${
-//               size.name
-//             }.${extName}`;
-//             await sharp(data)
-//               .resize(size.size)
-//               .rotate(rotate)
-//               .jpeg({ quality: 60 })
-//               .toFile(fileDestination)
-//               .then(async info => {
-//                 try {
-//                   console.log(info);
-//                   console.log(fileDestination);
-//                   const finalDestination = `${dir}/${Date.now()}-${size.name}-${
-//                     info.width
-//                   }x${info.height}.${extName}`;
-//                   await sharp(fileDestination)
-//                     .toFile(finalDestination)
-//                     .then(info => fs.unlinkSync(fileDestination));
-//                 } catch (error) {
-//                   console.error(error);
-//                 }
-//               });
-//           } catch (error) {
-//             console.log('sharp error', error);
-//           }
-//         });
-//       }
-//       fs.unlinkSync(file);
-//     });
-
-//     // const extName = file.split('.').slice(-1)[0];
-//     // await sizes.map(async size => {
-//     //   try {
-//     //     const fileDestination = `${dir}/${Date.now()}-${size.name}.${extName}`;
-//     //     await sharp(file)
-//     //       .resize(size.size)
-//     //       .rotate(rotate)
-//     //       .jpeg({ quality: 60 })
-//     //       .toFile(fileDestination)
-//     //       .then(info => {
-//     //         ++count;
-//     //         if (count === sizes.length) {
-//     //           count = 0;
-//     //         }
-//     //         console.log(count);
-//     //       });
-//     //     await fs.unlinkSync(file);
-//     //   } catch (error) {
-//     //     console.log('sharp error', error);
-//     //   }
-//     // });
-//   } catch (err) {
-//     console.log('resize error', err);
-//   }
-// };
