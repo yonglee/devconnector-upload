@@ -10,6 +10,7 @@ const PostForm = ({ addPost }) => {
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
 
+  // for image put preview
   const handleImageChange = e => {
     e.preventDefault();
     let reader = new FileReader();
@@ -21,6 +22,7 @@ const PostForm = ({ addPost }) => {
     };
     reader.readAsDataURL(file);
   };
+  // for image put preview
   const handleImageChange2 = e => {
     e.preventDefault();
     let reader = new FileReader();
