@@ -575,3 +575,16 @@ button {
     padding: 0.3rem 0.4rem;
   }
 }
+
+.rotate {
+  animation: rotate-animation 150ms ease;
+}
+
+@keyframes rotate-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(90deg);
+  }
+}

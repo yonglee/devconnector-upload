@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { addPost } from '../../store/actions/postAction';
@@ -9,6 +9,10 @@ const PostForm = ({ addPost }) => {
   const [imagePreviewUrl2, setImagePreviewUrl2] = useState('');
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
+  const imageRef1 = useRef(null);
+  const imageRef2 = useRef(null);
+  const [rotate1, setRotate1] = useState(0);
+  const [rotate2, setRotate2] = useState(0);
 
   // for image put preview
   const handleImageChange = e => {
@@ -58,19 +62,79 @@ const PostForm = ({ addPost }) => {
           setImagePreviewUrl2('');
         }}
       >
-        <div style={{ width: '400px', height: 'auto', overflow: 'hidden' }}>
-          <img src={imagePreviewUrl} alt="" width="100%" height="auto" />
+        <h5>Click an image to rotate 90deg</h5>
+        <div
+          style={{
+            height: 'auto',
+            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '50%',
+            display: 'inline-block'
+          }}
+        >
+          <strong>before:</strong>
+          <img
+            src={imagePreviewUrl}
+            alt=""
+            width="100%"
+            height="auto"
+            ref={imageRef1}
+            style={
+              rotate1 > 0
+                ? {
+                    transform: `rotate(${rotate1}deg)`,
+                    transition: `transform 150ms ease`
+                  }
+                : {}
+            }
+            onClick={e => {
+              if (rotate1 <= 270) setRotate1(rotate1 + 90);
+              if (rotate1 === 270) setRotate1(0);
+            }}
+          />
+          <input
+            type="file"
+            name="image1"
+            onChange={e => handleImageChange(e)}
+          />
         </div>
 
-        <input type="file" name="image1" onChange={e => handleImageChange(e)} />
-        <div style={{ width: '400px', height: 'auto', overflow: 'hidden' }}>
-          <img src={imagePreviewUrl2} alt="" width="100%" height="auto" />
+        <div
+          style={{
+            height: 'auto',
+            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '50%',
+            display: 'inline-block'
+          }}
+        >
+          <strong>after:</strong>
+          <img
+            src={imagePreviewUrl2}
+            alt=""
+            width="100%"
+            height="auto"
+            ref={imageRef2}
+            style={
+              rotate2 > 0
+                ? {
+                    transform: `rotate(${rotate2}deg)`,
+                    transition: `transform 150ms ease`
+                  }
+                : {}
+            }
+            onClick={e => {
+              if (rotate1 <= 270) setRotate2(rotate2 + 90);
+              if (rotate1 === 270) setRotate2(0);
+            }}
+          />
+          <input
+            type="file"
+            name="image2"
+            onChange={e => handleImageChange2(e)}
+          />
         </div>
-        <input
-          type="file"
-          name="image2"
-          onChange={e => handleImageChange2(e)}
-        />
+
         <textarea
           name="text"
           cols="30"

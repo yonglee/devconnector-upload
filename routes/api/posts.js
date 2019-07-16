@@ -59,8 +59,8 @@ router.post(
     try {
       const user = await User.findById(req.user.id).select('-password');
 
-      const image1 = req.files.image1;
-      const image2 = req.files.image2;
+      const image1 = req.files && req.files.image1 ? req.files.image1 : null;
+      const image2 = req.files && req.files.image2 ? req.files.image2 : null;
       var images1 = [];
       var images2 = [];
       var string = '';
@@ -74,8 +74,8 @@ router.post(
         const extName = image2.name.split('.').slice(-1)[0];
         images2 = await resize(image2.data, extName);
       }
-      console.log('in main', images1);
-      console.log('images2', images2);
+      // console.log('in main', images1);
+      // console.log('images2', images2);
 
       const newPost = new Post({
         text: req.body.text,
@@ -83,12 +83,12 @@ router.post(
         avatar: user.avatar,
         user: req.user.id,
         before: {
-          thumbnail: images1[0],
-          largeImage: images1[1]
+          thumbnail: images1.length > 0 && images1[0] ? images1[0] : '',
+          largeImage: images1.length > 0 && images1[1] ? images1[1] : ''
         },
         after: {
-          thumbnail: images1[0],
-          largeImage: images1[1]
+          thumbnail: images2.length > 0 && images2[0] ? images2[0] : '',
+          largeImage: images2.length > 0 && images2[1] ? images2[1] : ''
         }
       });
 
@@ -108,6 +108,10 @@ router.post(
 router.get('/', auth, async (req, res) => {
   try {
     const posts = await Post.find().sort({ date: -1 });
+    posts.map(post => {
+      console.log(post + '\n\n');
+    });
+
     res.json(posts);
   } catch (err) {
     console.error(err.message);
