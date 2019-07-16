@@ -2,6 +2,17 @@ import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { addPost } from '../../store/actions/postAction';
+import Message from '../layout/Message';
+
+const imageTypes = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/bmp',
+  'image/pjpeg'
+];
+
+const sizeLimit = 12000000;
 
 const PostForm = ({ addPost }) => {
   const [text, setText] = useState('');
@@ -9,36 +20,68 @@ const PostForm = ({ addPost }) => {
   const [imagePreviewUrl2, setImagePreviewUrl2] = useState('');
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
-  const imageRef1 = useRef(null);
-  const imageRef2 = useRef(null);
   const [rotate1, setRotate1] = useState(0);
   const [rotate2, setRotate2] = useState(0);
+  const [invalidMessage1, setInvalidMessage1] = useState('');
+  const [invalidMessage2, setInvalidMessage2] = useState('');
+  const imageRef1 = useRef(null);
+  const imageRef2 = useRef(null);
+  const imageInputRef1 = useRef(null);
+  const imageInputRef2 = useRef(null);
 
   // for image put preview
-  const handleImageChange = e => {
+  const handleImageChange1 = e => {
     e.preventDefault();
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    console.log(file);
-    reader.onloadend = () => {
-      setImage1(file);
-      setImagePreviewUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
+
+    // if image is not uploaded sent error message
+    if (e.target.files[0]) {
+      if (imageTypes.indexOf(e.target.files[0].type) === -1) {
+        imageInputRef1.current.value = '';
+        setInvalidMessage1('Please upload an image');
+        setImagePreviewUrl('');
+        // @todo: display invalid image input
+      } else {
+        setInvalidMessage1('');
+        const file = e.target.files[0];
+        if (file.size > sizeLimit) {
+          setInvalidMessage1('Please upload an image with size 12mb or lower');
+          imageInputRef1.current.value = '';
+        } else {
+          const reader = new FileReader();
+
+          reader.onloadend = () => {
+            // console.log('image loaded');
+
+            setImage1(file);
+            setImagePreviewUrl(reader.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    }
   };
   // for image put preview
-  //
   const handleImageChange2 = e => {
     e.preventDefault();
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    console.log(file);
 
-    reader.onloadend = () => {
-      setImage2(file);
-      setImagePreviewUrl2(reader.result);
-    };
-    reader.readAsDataURL(file);
+    // if image is not uploaded sent error message
+    if (e.target.files[0]) {
+      if (imageTypes.indexOf(e.target.files[0].type) === -1) {
+        imageInputRef2.current.value = '';
+        setInvalidMessage2('Please upload an image');
+        setImagePreviewUrl2('');
+      } else {
+        setInvalidMessage2('');
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          setImage2(file);
+          setImagePreviewUrl2(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   };
 
   return (
@@ -73,6 +116,9 @@ const PostForm = ({ addPost }) => {
           }}
         >
           <strong>before:</strong>
+          {invalidMessage1 !== '' && (
+            <Message message={invalidMessage1} badgeType="danger" />
+          )}
           <img
             src={imagePreviewUrl}
             alt=""
@@ -95,7 +141,8 @@ const PostForm = ({ addPost }) => {
           <input
             type="file"
             name="image1"
-            onChange={e => handleImageChange(e)}
+            ref={imageInputRef1}
+            onChange={e => handleImageChange1(e)}
           />
         </div>
 
@@ -109,6 +156,9 @@ const PostForm = ({ addPost }) => {
           }}
         >
           <strong>after:</strong>
+          {invalidMessage2 !== '' && (
+            <Message message={invalidMessage2} badgeType="danger" />
+          )}
           <img
             src={imagePreviewUrl2}
             alt=""
@@ -131,6 +181,7 @@ const PostForm = ({ addPost }) => {
           <input
             type="file"
             name="image2"
+            ref={imageInputRef2}
             onChange={e => handleImageChange2(e)}
           />
         </div>

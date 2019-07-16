@@ -14,7 +14,7 @@ const PostItem = ({
   removeLike,
   deletePost,
   auth,
-  post: { _id, text, name, avatar, user, likes, comments, date },
+  post: { _id, text, name, avatar, user, likes, comments, date, before, after },
   showActions
 }) => {
   return (
@@ -26,6 +26,14 @@ const PostItem = ({
         </Link>
       </div>
       <div>
+        <div className="thumbnail-container">
+          <div className="thumbnail-box">
+            {before.thumbnail !== '' && <img src={before.thumbnail} alt="" />}
+          </div>
+          <div className="thumbnail-box">
+            {after.thumbnail !== '' && <img src={after.thumbnail} alt="" />}
+          </div>
+        </div>
         <p className="my-1">{text}</p>
         <p className="post-date">
           Posted on <Moment format="MM/DD/YYYY">{date}</Moment>

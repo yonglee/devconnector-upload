@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const path = require('path');
-
+const fs = require('fs');
 const auth = require('../../middleware/auth');
 
 // bring models
@@ -157,6 +157,12 @@ router.delete('/:post_id', auth, async (req, res) => {
     if (post.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
+
+    // delete files that were saved
+    if (post.before.thumbnail) await fs.unlinkSync(post.before.thumbnail);
+    if (post.before.largeImage) await fs.unlinkSync(post.before.largeImage);
+    if (post.after.thumbnail) await fs.unlinkSync(post.after.thumbnail);
+    if (post.after.largeImage) await fs.unlinkSync(post.after.largeImage);
 
     await post.remove();
 
