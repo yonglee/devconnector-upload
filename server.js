@@ -9,11 +9,18 @@ const fileUpload = require('express-fileupload');
 const app = express();
 app.use(cors());
 
-const dir = 'uploads';
+const postsDir = 'uploads/posts';
 
-fs.exists(dir, exists => {
+fs.exists(postsDir, exists => {
   if (!exists) {
-    fs.mkdir(dir, created => {});
+    fs.mkdir(postsDir, created => {});
+  }
+});
+const galleryDir = 'uploads/gallery';
+
+fs.exists(galleryDir, exists => {
+  if (!exists) {
+    fs.mkdir(galleryDir, created => {});
   }
 });
 

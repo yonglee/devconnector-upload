@@ -67,11 +67,19 @@ img {
 }
 
 .text-primary {
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
+}
+
+.text-light {
+  color: var(--light-color) !important;
 }
 
 .text-dark {
-  color: var(--dark-color);
+  color: var(--dark-color) !important;
+}
+
+.text-success {
+  color: var(--success-color) !important;
 }
 
 /* Padding */
@@ -605,4 +613,8 @@ button {
 .thumbnail-container > .thumbnail-box > img {
   width: 100%;
   height: 100%;
+}
+
+.block {
+  display: block;
 }

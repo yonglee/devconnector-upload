@@ -3,7 +3,7 @@ const sharp = require('sharp');
 
 sharp.cache({ files: 0 });
 
-const dir = 'uploads';
+// const dir = 'uploads/posts';
 
 const sizes = [
   {
@@ -16,14 +16,14 @@ const sizes = [
   }
 ];
 
-const resize = async (imageBuffer, extName) => {
+const resize = async (imageBuffer, extName, rotate = 0, dir) => {
   var images = [];
   var string = '';
   for (let i = 0; i < sizes.length; i++) {
     const fileDestination = `${dir}/${Date.now()}-${sizes[i].name}.${extName}`;
     string = await sharp(imageBuffer)
       .resize(sizes[i].size)
-      .rotate((rotate = 0))
+      .rotate(rotate)
       .jpeg({ quality: 60 })
       .toFile(fileDestination)
       .then(info => {

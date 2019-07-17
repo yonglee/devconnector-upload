@@ -12,7 +12,7 @@ const Post = require('../../Models/Post');
 const mongoose = require('mongoose');
 const resize = require('../../functions/resize');
 
-const dir = 'uploads';
+const postsDir = 'uploads/posts';
 
 router.post('/upload', auth, async (req, res) => {
   const image1 = req.files.image1;
@@ -21,7 +21,7 @@ router.post('/upload', auth, async (req, res) => {
   var images2 = [];
   var string = '';
 
-  console.log(req.body.name);
+  // console.log(req.body.name);
 
   if (image1) {
     const extName = image1.name.split('.').slice(-1)[0];
@@ -68,11 +68,21 @@ router.post(
       if (image1) {
         const extName = image1.name.split('.').slice(-1)[0];
 
-        images1 = await resize(image1.data, extName);
+        images1 = await resize(
+          image1.data,
+          extName,
+          parseInt(req.body.rotate1),
+          postsDir
+        );
       }
       if (image2) {
         const extName = image2.name.split('.').slice(-1)[0];
-        images2 = await resize(image2.data, extName);
+        images2 = await resize(
+          image2.data,
+          extName,
+          parseInt(req.body.rotate2),
+          postsDir
+        );
       }
       // console.log('in main', images1);
       // console.log('images2', images2);
@@ -159,10 +169,34 @@ router.delete('/:post_id', auth, async (req, res) => {
     }
 
     // delete files that were saved
-    if (post.before.thumbnail) await fs.unlinkSync(post.before.thumbnail);
-    if (post.before.largeImage) await fs.unlinkSync(post.before.largeImage);
-    if (post.after.thumbnail) await fs.unlinkSync(post.after.thumbnail);
-    if (post.after.largeImage) await fs.unlinkSync(post.after.largeImage);
+    if (post.before.thumbnail) {
+      fs.exists(post.before.thumbnail, exists => {
+        if (exists) {
+          fs.unlinkSync(post.before.thumbnail);
+        }
+      });
+    }
+    if (post.before.largeImage) {
+      fs.exists(post.before.largeImage, exists => {
+        if (exists) {
+          fs.unlinkSync(post.before.largeImage);
+        }
+      });
+    }
+    if (post.after.thumbnail) {
+      fs.exists(post.after.thumbnail, exists => {
+        if (exists) {
+          fs.unlinkSync(post.after.thumbnail);
+        }
+      });
+    }
+    if (post.after.largeImage) {
+      fs.exists(post.after.largeImage, exists => {
+        if (exists) {
+          fs.unlinkSync(post.after.largeImage);
+        }
+      });
+    }
 
     await post.remove();
 
